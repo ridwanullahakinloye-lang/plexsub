@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlexSub – Data & Subscription Hub</title>
+
+<style>
+/* CSS Variables */
+:root {
+  --main: #0d6efd;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --success: #28a745;
+  --danger: #dc3545;
+}
+
+/* Reset and body */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+body {
+  background: var(--bg);
+}
+
+/* Header */
+header {
+  background: var(--main);
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* Container */
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 15px;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Buttons */
+button {
+  background: var(--main);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover {
+  opacity: 0.9;
+}
+
+/* Inputs */
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0 10px;
+}
+
+/* Notifications */
+.notification {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+}
+.success { background: var(--success); }
+.error { background: var(--danger); }
+
+/* Services grid */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 10px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 14px;
+  color: gray;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .service-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>PlexSub – Affordable Data & Subscriptions</header>
+
+<div class="container">
+
+  <!-- Notifications -->
+  <div id="notify"></div>
+
+  <!-- WALLET -->
+  <div class="card">
+    <h2>Wallet</h2>
+    <p>Balance: ₦<span id="balance">0</span></p>
+    <input type="number" id="amount" placeholder="Enter amount">
+    <button onclick="fundWallet()">Fund Wallet</button>
+  </div>
+
+  <!-- SERVICES -->
+  <div class="card">
+    <h2>Buy Services</h2>
+
+    <div class="service-grid">
+
+      <div class="card">
+        <h3>Buy Data</h3>
+        <select id="data-plan">
+          <option value="500">1GB – ₦500</option>
+          <option value="1000">2GB – ₦1000</option>
+        </select>
+        <button onclick="buyService('Data', 'data-plan')">Buy</button>
+      </div>
+
+      <div class="card">
+        <h3>Buy Airtime</h3>
+        <select id="airtime-plan">
+          <option value="200">₦200 Airtime</option>
+          <option value="500">₦500 Airtime</option>
+        </select>
+        <button onclick="buyService('Airtime', 'airtime-plan')">Buy</button>
+      </div>
+
+      <div class="card">
+        <h3>Betting Subscription</h3>
+        <select id="betting-plan">
+          <option value="300">Weekly – ₦300</option>
+          <option value="1000">Monthly – ₦1000</option>
+        </select>
+        <button onclick="buyService('Betting', 'betting-plan')">Subscribe</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TRANSACTIONS -->
+  <div class="card">
+    <h2>Transaction History</h2>
+    <ul id="history"></ul>
+  </div>
+
+  <!-- REPORT -->
+  <div class="card">
+    <h2>Report / Complaint</h2>
+    <select id="report-type">
+      <option>Subscription</option>
+      <option>Payment</option>
+      <option>Other</option>
+    </select>
+    <textarea id="report-msg" placeholder="Describe your issue"></textarea>
+    <button onclick="submitReport()">Submit Report</button>
+  </div>
+
+</div>
+
+<footer>
+© 2026 PlexSub • Fast • Reliable • Nigerian-Focused
+</footer>
+
+<script>
+/* JavaScript Functionality */
+let balance = 0;
+
+function notify(msg, type="success") {
+  document.getElementById("notify").innerHTML =
+    `<div class="notification ${type}">${msg}</div>`;
+  setTimeout(()=>{document.getElementById("notify").innerHTML=""}, 3000);
+}
+
+function fundWallet() {
+  const amt = Number(document.getElementById("amount").value);
+  if (amt <= 0) return notify("Enter valid amount", "error");
+  balance += amt;
+  updateBalance();
+  notify(`Wallet funded successfully: ₦${amt}`);
+  addHistory(`Wallet funded ₦${amt}`);
+  document.getElementById("amount").value = "";
+}
+
+function buyService(name, selectId) {
+  const price = Number(document.getElementById(selectId).value);
+  if (balance < price) return notify("Insufficient balance", "error");
+  balance -= price;
+  updateBalance();
+  notify(`${name} purchase successful`);
+  addHistory(`${name} – ₦${price}`);
+}
+
+function updateBalance() {
+  document.getElementById("balance").textContent = balance;
+}
+
+function addHistory(text) {
+  const li = document.createElement("li");
+  li.textContent = text;
+  document.getElementById("history").prepend(li);
+}
+
+function submitReport() {
+  const msg = document.getElementById("report-msg").value.trim();
+  if (!msg) return notify("Please describe your issue", "error");
+  notify("Report submitted successfully");
+  document.getElementById("report-msg").value = "";
+}
+</script>
+
+</body>
+</html>
